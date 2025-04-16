@@ -7,7 +7,6 @@ class HeaderBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height * 0.20,
       child: Stack(
         children: [
           Image.asset(
@@ -15,7 +14,6 @@ class HeaderBanner extends StatelessWidget {
             width: MediaQuery.of(context).size.width,
             fit: BoxFit.cover,
           ),
-
           Positioned(
             left: 48,
             top: 68,
