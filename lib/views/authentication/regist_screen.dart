@@ -24,6 +24,7 @@ class _RegistScreenState extends State<RegistScreen> {
     setState(() {
       isLoading = true;
     });
+
     await _authController
         .signUpUser(
           context: context,
@@ -87,7 +88,7 @@ class _RegistScreenState extends State<RegistScreen> {
                     },
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Enter your name';
+                        return 'Please, enter your name';
                       } else {
                         return null;
                       }

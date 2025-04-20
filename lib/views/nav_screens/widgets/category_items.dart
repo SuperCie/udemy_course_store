@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:les_store_app/controllers/category_controller.dart';
 import 'package:les_store_app/models/categorymodel.dart';
+import 'package:les_store_app/views/detail/screen/inner_categoryscreen.dart';
 import 'package:les_store_app/views/utilities/reuse_text.dart';
 
 class CategoryWidget extends StatefulWidget {
@@ -51,21 +52,34 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                   itemCount: categories.length,
                   itemBuilder: (context, index) {
                     final categoriesData = categories[index];
-                    return Column(
-                      children: [
-                        Image.network(
-                          categoriesData.image,
-                          width: 47,
-                          height: 47,
-                        ),
-                        Text(
-                          categoriesData.name,
-                          style: GoogleFonts.quicksand(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                    return InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) => InnerCategoryscreen(
+                                  categoryModel: categoriesData,
+                                ),
                           ),
-                        ),
-                      ],
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          Image.network(
+                            categoriesData.image,
+                            width: 47,
+                            height: 47,
+                          ),
+                          Text(
+                            categoriesData.name,
+                            style: GoogleFonts.quicksand(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
                     );
                   },
                 );

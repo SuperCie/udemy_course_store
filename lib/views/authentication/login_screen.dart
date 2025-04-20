@@ -81,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Enter your email';
+                        return 'Please, Enter your email';
                       } else {
                         return null;
                       }
@@ -126,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Enter your password';
+                        return 'Please, enter your password';
                       } else {
                         return null;
                       }
@@ -169,8 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     onTap: () {
                       if (_formKey.currentState!.validate()) {
                         loginUser();
-                        _formKey.currentState!.reset(); //clear form
-                      } else {}
+                      }
                     },
                     child: Container(
                       width: double.infinity,

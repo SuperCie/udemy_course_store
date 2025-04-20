@@ -1,11 +1,16 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:les_store_app/global_variables.dart';
 import 'package:les_store_app/models/user.dart';
 import 'package:http/http.dart' as http;
+import 'package:les_store_app/provider/user_provder.dart';
 import 'package:les_store_app/services/http_response.dart';
+import 'package:les_store_app/views/authentication/login_screen.dart';
 import 'package:les_store_app/views/main_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+final providerContainer = ProviderContainer();
 
 class AuthController {
   // signup function
@@ -42,7 +47,7 @@ class AuthController {
           showBar(context, 'Account created');
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => MainScreen()),
+            MaterialPageRoute(builder: (context) => LoginScreen()),
             (route) => false,
           );
         },
@@ -75,8 +80,25 @@ class AuthController {
       manageHttp(
         response: response,
         context: context,
-        onSuccess: () {
+        onSuccess: () async {
           showBar(context, 'Welcome back');
+          //Access shared preferences for token and user data storage
+          SharedPreferences preferences = await SharedPreferences.getInstance();
+
+          // extract authentication token and save it to device
+          String token = jsonDecode(response.body)['token'];
+          // store the authentication token securely in sharedPrefences
+          await preferences.setString('auth_token', token);
+
+          // Encode the user data received from backend as json
+          final userJson = jsonEncode(jsonDecode(response.body)['user']);
+
+          // update the application state with the user data using riverpod
+          providerContainer.read(userProvder.notifier).setUser(userJson);
+
+          // store the data in sharePreference for future use
+          await preferences.setString('user', userJson);
+
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => MainScreen()),
@@ -86,6 +108,35 @@ class AuthController {
       );
     } catch (e) {
       showBar(context, 'error: $e');
+    }
+  }
+
+  //sign out
+  Future<void> signOutUser({required context}) async {
+    try {
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+
+      // clear the token and user from sharedpreference
+      await preferences.remove('auth_token');
+      await preferences.remove('user');
+      // clear the user state
+      providerContainer.read(userProvder.notifier).signOut();
+      // navigate the user back to the login screen
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return LoginScreen();
+          },
+        ),
+        (route) => false,
+      );
+      print("TOKEN after signout: ${preferences.getString('auth_token')}");
+      print("USER after signout: ${preferences.getString('user')}");
+
+      showBar(context, 'Signout successfully');
+    } catch (e) {
+      showBar(context, e.toString());
     }
   }
 }

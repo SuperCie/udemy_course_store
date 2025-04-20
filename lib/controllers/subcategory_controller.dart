@@ -24,7 +24,7 @@ class SubcategoryController {
         // convert response json to dart object
         final List<dynamic> subCategoryData = jsonDecode(response.body);
 
-        if (subCategoryData.isEmpty) {
+        if (subCategoryData.isNotEmpty) {
           // convert to category object
           return subCategoryData
               .map((subcategory) => SubcategoryModel.fromJson(subcategory))
