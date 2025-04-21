@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
 void manageHttp({
@@ -26,5 +27,19 @@ void manageHttp({
 }
 
 void showBar(BuildContext context, String text) {
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      backgroundColor: Colors.grey,
+      margin: EdgeInsets.all(15),
+      behavior: SnackBarBehavior.floating,
+      content: Text(
+        text,
+        style: GoogleFonts.lato(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.5,
+        ),
+      ),
+    ),
+  );
 }

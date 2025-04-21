@@ -139,4 +139,51 @@ class AuthController {
       showBar(context, e.toString());
     }
   }
+
+  //Update user state, city and locality
+  Future<void> updateUserData({
+    required context,
+    required String id,
+    required String state,
+    required String city,
+    required String locality,
+  }) async {
+    try {
+      // make an http put request to update users state, city and locality
+      http.Response response = await http.put(
+        Uri.parse('$uri/api/users/$id'),
+        headers: <String, String>{
+          // set the header
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        // encode the update data(state, city, and locality) as json object
+        body: jsonEncode({'state': state, 'city': city, 'locality': locality}),
+      );
+      manageHttp(
+        response: response,
+        context: context,
+        onSuccess: () async {
+          // decode the updated user data from the response body (json type)
+          // because we sending the data from api is json type
+          final updatedUser = jsonDecode(response.body);
+
+          //access sharedpreferences for local data storage user
+          SharedPreferences preferences = await SharedPreferences.getInstance();
+
+          //encode the update user data as json string (prepares data for storage in shared preferences)
+          final userJson = jsonEncode(updatedUser);
+
+          //update the application state wtih the updated user data using riverpod
+          // this ensures the app reflects the most recent user data
+          providerContainer.read(userProvder.notifier).setUser(userJson);
+
+          // store the updated user data in sharepreference for future use
+          // this allow the app to retrive the user data even if the app got restarted
+          await preferences.setString('user', userJson);
+        },
+      );
+    } catch (e) {
+      showBar(context, 'error: $e');
+    }
+  }
 }
