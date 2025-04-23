@@ -22,6 +22,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     final cartData = ref.read(cartProvider);
     final _cartProvider = ref.read(cartProvider.notifier);
     final user = ref.watch(userProvder);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -113,7 +114,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                       Align(
                                         alignment: Alignment.centerLeft,
                                         child:
-                                            user!.state.isNotEmpty
+                                            user.state.isNotEmpty
                                                 ? Text(
                                                   user.state,
                                                   style: GoogleFonts.lato(

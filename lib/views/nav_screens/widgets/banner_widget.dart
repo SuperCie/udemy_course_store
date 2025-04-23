@@ -1,25 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:les_store_app/controllers/banner_controller.dart';
-import 'package:les_store_app/models/bannermodel.dart';
+import 'package:les_store_app/provider/banner_provider.dart';
 
-class BannerWidget extends StatefulWidget {
+class BannerWidget extends ConsumerStatefulWidget {
   const BannerWidget({super.key});
 
   @override
-  State<BannerWidget> createState() => _BannerWidgetState();
+  ConsumerState<BannerWidget> createState() => _BannerWidgetState();
 }
 
-class _BannerWidgetState extends State<BannerWidget> {
-  Future<List<BannerModel>>? futureBanners;
-
+class _BannerWidgetState extends ConsumerState<BannerWidget> {
   @override
   void initState() {
     super.initState();
-    futureBanners = BannerController().fetchBanner();
+    loadBanners();
+  }
+
+  Future<void> loadBanners() async {
+    try {
+      final bannerController = BannerController();
+      final bannerData = await bannerController.fetchBanner();
+      ref.read(bannerProvider.notifier).setBanner(bannerData);
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final banners = ref.watch(bannerProvider);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Container(
@@ -29,28 +39,14 @@ class _BannerWidgetState extends State<BannerWidget> {
         ),
         width: MediaQuery.of(context).size.width,
         height: 170,
-        child: FutureBuilder(
-          future: futureBanners,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Center(child: Text('No Banners Data'));
-            } else {
-              final banners = snapshot.data!;
-              return PageView.builder(
-                itemCount: banners.length,
-                itemBuilder: (context, index) {
-                  final bannersData = banners[index];
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(25),
-                    child: Image.network(bannersData.image, fit: BoxFit.cover),
-                  );
-                },
-              );
-            }
+        child: PageView.builder(
+          itemCount: banners.length,
+          itemBuilder: (context, index) {
+            final bannersData = banners[index];
+            return ClipRRect(
+              borderRadius: BorderRadius.circular(25),
+              child: Image.network(bannersData.image, fit: BoxFit.cover),
+            );
           },
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:les_store_app/controllers/auth_controller.dart';
+import 'package:les_store_app/views/detail/screen/orders_screen.dart';
 import 'package:les_store_app/views/nav_screens/widgets/account_banner.dart';
 
 class AccountScreen extends StatelessWidget {
@@ -25,6 +26,23 @@ class AccountScreen extends StatelessWidget {
               leading: Image.asset('assets/icons/logout.png'),
               title: Text(
                 'Logout',
+                style: GoogleFonts.roboto(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ),
+            ListTile(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => OrdersScreen()),
+                );
+              },
+              leading: Image.asset('assets/icons/orders.png'),
+              title: Text(
+                'My Orders',
                 style: GoogleFonts.roboto(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
