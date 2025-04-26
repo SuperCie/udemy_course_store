@@ -1,17 +1,19 @@
+import 'package:custom_rating_bar/custom_rating_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:les_store_app/controllers/productreview_controller.dart';
 import 'package:les_store_app/models/ordermodel.dart';
 
-class OrderDetailScreen extends StatefulWidget {
+class OrderDetailScreen extends StatelessWidget {
   final Ordermodel order;
-  const OrderDetailScreen({super.key, required this.order});
+  OrderDetailScreen({super.key, required this.order});
+  final textReviewController = TextEditingController();
 
-  @override
-  State<OrderDetailScreen> createState() => _OrderDetailScreenState();
-}
+  final ProductreviewController productreviewController =
+      ProductreviewController();
 
-class _OrderDetailScreenState extends State<OrderDetailScreen> {
-  @override
+  double rating = 0.0;
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
@@ -106,7 +108,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                       left: 10,
                                       top: 5,
                                       child: Image.network(
-                                        widget.order.productImages,
+                                        order.productImages,
                                         width: 58,
                                         height: 67,
                                         fit: BoxFit.cover,
@@ -138,7 +140,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                             SizedBox(
                                               width: double.infinity,
                                               child: Text(
-                                                widget.order.productName,
+                                                order.productName,
                                                 style: GoogleFonts.montserrat(
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.bold,
@@ -148,7 +150,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                             ),
                                             SizedBox(height: 4),
                                             Text(
-                                              widget.order.category,
+                                              order.category,
                                               style: GoogleFonts.montserrat(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.bold,
@@ -158,7 +160,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                             ),
                                             SizedBox(height: 4),
                                             Text(
-                                              "\$${widget.order.productPrice.toStringAsFixed(2)}",
+                                              "\$${order.productPrice.toStringAsFixed(2)}",
                                               style: GoogleFonts.montserrat(
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.bold,
@@ -183,9 +185,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                 clipBehavior: Clip.antiAlias,
                                 decoration: BoxDecoration(
                                   color:
-                                      widget.order.delivered == true
+                                      order.delivered == true
                                           ? Color(0xFF3C55EF)
-                                          : widget.order.processing == true
+                                          : order.processing == true
                                           ? Colors.purple
                                           : Colors.red,
                                   borderRadius: BorderRadius.circular(8),
@@ -197,9 +199,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                       left: 6,
                                       top: 3,
                                       child: Text(
-                                        widget.order.delivered == true
+                                        order.delivered == true
                                             ? "Delivered"
-                                            : widget.order.processing == true
+                                            : order.processing == true
                                             ? "On Process"
                                             : "Canceled",
 
@@ -225,77 +227,150 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             ),
           ),
           // address widget
-          Container(
-            width: 335,
-            height: widget.order.delivered == true ? 180 : 180,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: Color(0xFFEFF0F2)),
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
+          Flexible(
+            fit: FlexFit.loose,
+            child: Container(
+              width: 335,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: Color(0xFFEFF0F2)),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "Delivery Address",
+                          style: GoogleFonts.montserrat(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.7,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          order.state,
+                          style: GoogleFonts.montserrat(
+                            fontSize: 14,
+                            letterSpacing: 1.3,
+                          ),
+                        ),
+                        Text(
+                          'To : ${order.fullName.toUpperCase()}',
+                          style: GoogleFonts.montserrat(
+                            fontSize: 16,
+                            letterSpacing: 1.3,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'Order id: ${order.id}',
+                          style: GoogleFonts.montserrat(
+                            fontSize: 14,
+                            letterSpacing: 1.3,
+                          ),
+                        ),
+                        Divider(),
+                      ],
+                    ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        "Delivery Address",
-                        style: GoogleFonts.montserrat(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.7,
+                  order.delivered == true
+                      ? TextButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text(
+                                  'Leave a review',
+                                  style: GoogleFonts.montserrat(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    TextFormField(
+                                      controller: textReviewController,
+                                      decoration: InputDecoration(
+                                        hintText: 'Your review',
+                                      ),
+                                    ),
+                                    RatingBar(
+                                      filledIcon: Icons.star,
+                                      emptyIcon: Icons.star_border,
+                                      onRatingChanged: (value) {
+                                        rating = value;
+                                      },
+                                      initialRating: rating,
+                                      maxRating: 5,
+                                    ),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(
+                                      'Cancel',
+                                      style: GoogleFonts.montserrat(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      final review = textReviewController.text;
+                                      productreviewController.uploadReview(
+                                        buyerId: order.buyerId,
+                                        email: order.email,
+                                        buyerName: order.fullName,
+                                        orderId: order.id,
+                                        productId: order.productId,
+                                        rating: rating,
+                                        review: review,
+                                        context: context,
+                                      );
+                                    },
+                                    child: Text(
+                                      'Submit',
+                                      style: GoogleFonts.montserrat(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        child: Text(
+                          'Leave a Review',
+                          style: GoogleFonts.montserrat(
+                            fontSize: 16,
+                            letterSpacing: 1.3,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        widget.order.state,
-                        style: GoogleFonts.montserrat(
-                          fontSize: 14,
-                          letterSpacing: 1.3,
-                        ),
-                      ),
-                      Text(
-                        'To : ${widget.order.fullName.toUpperCase()}',
-                        style: GoogleFonts.montserrat(
-                          fontSize: 16,
-                          letterSpacing: 1.3,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        'Order id: ${widget.order.id}',
-                        style: GoogleFonts.montserrat(
-                          fontSize: 14,
-                          letterSpacing: 1.3,
-                        ),
-                      ),
-                      Divider(),
-                    ],
-                  ),
-                ),
-                widget.order.delivered == true
-                    ? TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        'Leave a Review',
-                        style: GoogleFonts.montserrat(
-                          fontSize: 16,
-                          letterSpacing: 1.3,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    )
-                    : SizedBox(),
-              ],
+                      )
+                      : SizedBox(),
+                ],
+              ),
             ),
           ),
         ],

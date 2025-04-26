@@ -5,7 +5,7 @@ import 'package:les_store_app/views/detail/widget/inner_content_subcategory_scre
 import 'package:les_store_app/views/nav_screens/account_screen.dart';
 import 'package:les_store_app/views/nav_screens/cart_screen.dart';
 import 'package:les_store_app/views/nav_screens/category_screen.dart';
-import 'package:les_store_app/views/nav_screens/favorite_screen.dart';
+import 'package:les_store_app/views/nav_screens/wishlist_screen.dart';
 import 'package:les_store_app/views/nav_screens/store_screen.dart';
 
 class InnerCategoryscreen extends StatefulWidget {
@@ -22,7 +22,7 @@ class _InnerCategoryscreenState extends State<InnerCategoryscreen> {
   Widget build(BuildContext context) {
     final List<Widget> _pages = [
       InnerContentSubcategoryScreen(categoryModel: widget.categoryModel),
-      FavoriteScreen(),
+      WishlistScreen(),
       CategoryScreen(),
       StoreScreen(),
       CartScreen(),
@@ -46,7 +46,7 @@ class _InnerCategoryscreenState extends State<InnerCategoryscreen> {
           ),
           BottomNavigationBarItem(
             icon: Image.asset('assets/icons/love.png', width: 30),
-            label: 'Favorite',
+            label: 'Wishlist',
           ),
           BottomNavigationBarItem(
             icon: Image.asset('assets/icons/category.png', width: 30),

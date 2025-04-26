@@ -1,14 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:les_store_app/models/productmodel.dart';
+import 'package:les_store_app/provider/cart_provider.dart';
+import 'package:les_store_app/provider/wishlist_provider.dart';
+import 'package:les_store_app/services/http_response.dart';
 import 'package:les_store_app/views/detail/screen/product_detail_screen.dart';
 
-class ProductItem extends StatelessWidget {
+class ProductItem extends ConsumerStatefulWidget {
   final Product product;
   const ProductItem({super.key, required this.product});
 
   @override
+  ConsumerState<ProductItem> createState() => _ProductItemState();
+}
+
+class _ProductItemState extends ConsumerState<ProductItem> {
+  @override
   Widget build(BuildContext context) {
+    final wishProvider = ref.read(wishlistProvider.notifier);
+    final wishData = ref.watch(wishlistProvider);
+    final isInWishlist = wishData.containsKey(widget.product.id);
+
+    final cartDataProvider = ref.read(cartProvider.notifier);
+    final isInCart = wishData.containsKey(widget.product.id);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: InkWell(
@@ -16,7 +31,8 @@ class ProductItem extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ProductDetailScreen(product: product),
+              builder:
+                  (context) => ProductDetailScreen(product: widget.product),
             ),
           );
         },
@@ -32,7 +48,7 @@ class ProductItem extends StatelessWidget {
                 child: Stack(
                   children: [
                     Image.network(
-                      product.images[0],
+                      widget.product.images[0],
                       height: 170,
                       width: 170,
                       fit: BoxFit.cover,
@@ -40,27 +56,75 @@ class ProductItem extends StatelessWidget {
                     Positioned(
                       top: 15,
                       right: 2,
-                      child: Image.asset(
-                        'assets/icons/love.png',
-                        width: 26,
-                        height: 26,
+                      child: IconButton(
+                        onPressed: () {
+                          isInWishlist == true
+                              ? wishProvider.removeWish(widget.product.id)
+                              : wishProvider.addWish(
+                                productName: widget.product.productName,
+                                productPrice: widget.product.productPrice,
+                                productId: widget.product.id,
+                                productDescription: widget.product.description,
+                                category: widget.product.category,
+                                images: widget.product.images,
+                                vendorId: widget.product.sellerId,
+                                productQuantity: widget.product.quantity,
+                                quantity: 1,
+                                vendorName: widget.product.sellerName,
+                              );
+                          showBar(
+                            context,
+                            isInWishlist == true
+                                ? "Remove from wishlist"
+                                : "Added to Wishlish",
+                          );
+                        },
+                        icon:
+                            isInWishlist == true
+                                ? Icon(Icons.favorite, color: Colors.pink)
+                                : Icon(Icons.favorite_border),
                       ),
                     ),
                     Positioned(
                       top: 15,
                       left: 2,
-                      child: Image.asset(
-                        'assets/icons/cart.png',
-                        height: 26,
-                        width: 26,
+                      child: InkWell(
+                        onTap:
+                            isInCart
+                                ? null
+                                : () {
+                                  cartDataProvider.addProductToCart(
+                                    productName: widget.product.productName,
+                                    productPrice: widget.product.productPrice,
+                                    productId: widget.product.id,
+                                    productDescription:
+                                        widget.product.description,
+                                    category: widget.product.category,
+                                    images: widget.product.images,
+                                    vendorId: widget.product.sellerId,
+                                    productQuantity: widget.product.quantity,
+                                    quantity: 1,
+                                    vendorName: widget.product.sellerName,
+                                  );
+                                  showBar(
+                                    context,
+                                    isInWishlist == true
+                                        ? "Remove from cart"
+                                        : "Added to cart",
+                                  );
+                                },
+                        child: Image.asset(
+                          'assets/icons/cart.png',
+                          height: 26,
+                          width: 26,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 10),
               Text(
-                product.productName,
+                widget.product.productName,
                 style: GoogleFonts.roboto(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -68,9 +132,20 @@ class ProductItem extends StatelessWidget {
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
-              SizedBox(height: 4),
+              widget.product.averageRatings == 0.0
+                  ? SizedBox()
+                  : Row(
+                    children: [
+                      Icon(Icons.star, color: Colors.amber, size: 12),
+                      SizedBox(width: 4),
+                      Text(
+                        widget.product.averageRatings.toStringAsFixed(1),
+                        style: GoogleFonts.roboto(fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
               Text(
-                product.category,
+                widget.product.category,
                 style: GoogleFonts.quicksand(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
@@ -78,7 +153,7 @@ class ProductItem extends StatelessWidget {
                 ),
               ),
               Text(
-                '\$${product.productPrice.toStringAsFixed(2)}',
+                '\$${widget.product.productPrice.toStringAsFixed(2)}',
                 style: GoogleFonts.quicksand(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,

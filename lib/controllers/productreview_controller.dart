@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:les_store_app/global_variables.dart';
 import 'package:les_store_app/models/product_review.dart';
@@ -8,8 +10,9 @@ class ProductreviewController {
     required String buyerId,
     required String email,
     required String buyerName,
+    required String orderId,
     required String productId,
-    required double number,
+    required double rating,
     required String review,
     required context,
   }) async {
@@ -19,17 +22,21 @@ class ProductreviewController {
         buyerId: buyerId,
         email: email,
         buyerName: buyerName,
+        orderId: orderId,
         productId: productId,
-        number: number,
+        rating: rating,
         review: review,
       );
 
       http.Response response = await http.post(
         Uri.parse('$uri/api/product-review'),
+        body: productReview.toJson(),
         headers: <String, String>{
           "Content-Type": 'application/json; charset=UTF-8',
         },
       );
+      print("Status Code: ${response.statusCode}");
+      print("Body: ${response.body}");
       manageHttp(
         response: response,
         context: context,
@@ -37,6 +44,9 @@ class ProductreviewController {
           showBar(context, 'Added a review');
         },
       );
-    } catch (e) {}
+    } catch (e) {
+      print(e.toString());
+      showBar(context, e.toString());
+    }
   }
 }

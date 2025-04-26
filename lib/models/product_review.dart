@@ -1,12 +1,15 @@
 import 'dart:convert';
 
+import 'package:les_store_app/models/productmodel.dart';
+
 class ProductReview {
   final String id;
   final String buyerId;
   final String email;
   final String buyerName;
+  final String orderId;
   final String productId;
-  final double number;
+  final double rating;
   final String review;
 
   ProductReview({
@@ -14,8 +17,9 @@ class ProductReview {
     required this.buyerId,
     required this.email,
     required this.buyerName,
+    required this.orderId,
     required this.productId,
-    required this.number,
+    required this.rating,
     required this.review,
   });
 
@@ -25,8 +29,9 @@ class ProductReview {
       'buyerId': buyerId,
       'email': email,
       'buyerName': buyerName,
+      'orderId': orderId,
       'productId': productId,
-      'number': number,
+      'rating': rating,
       'review': review,
     };
   }
@@ -39,8 +44,9 @@ class ProductReview {
       buyerId: map['buyerId'],
       email: map['email'],
       buyerName: map['buyerName'],
+      orderId: map['orderId'],
       productId: map['productId'],
-      number: map['number'],
+      rating: map['rating'],
       review: map['review'],
     );
   }

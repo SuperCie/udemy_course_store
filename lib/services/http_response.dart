@@ -13,15 +13,19 @@ void manageHttp({
   switch (response.statusCode) {
     case 200: // status code 200 indicates a successfull request
       onSuccess();
+      Navigator.pop(context);
+
+      break;
+    case 201:
+      onSuccess();
+      Navigator.pop(context);
+
       break;
     case 400: // status code 400 indicates user error request/bad request
       showBar(context, jsonDecode(response.body)['msg']);
       break;
     case 500: // status code 500 indicates server error
       showBar(context, jsonDecode(response.body)['error']);
-      break;
-    case 201: // status code 201 indicates a resource was created successfuly
-      onSuccess();
       break;
   }
 }
@@ -40,6 +44,7 @@ void showBar(BuildContext context, String text) {
           letterSpacing: 1.5,
         ),
       ),
+      duration: Duration(seconds: 1),
     ),
   );
 }

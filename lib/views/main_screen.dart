@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:les_store_app/views/nav_screens/account_screen.dart';
 import 'package:les_store_app/views/nav_screens/cart_screen.dart';
 import 'package:les_store_app/views/nav_screens/category_screen.dart';
-import 'package:les_store_app/views/nav_screens/favorite_screen.dart';
+import 'package:les_store_app/views/nav_screens/wishlist_screen.dart';
 import 'package:les_store_app/views/nav_screens/home_screen.dart';
 import 'package:les_store_app/views/nav_screens/store_screen.dart';
 
@@ -18,7 +18,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final List _pages = [
     HomeScreen(),
-    FavoriteScreen(),
+    WishlistScreen(),
     CategoryScreen(),
     StoreScreen(),
     CartScreen(),
@@ -45,7 +45,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
           BottomNavigationBarItem(
             icon: Image.asset('assets/icons/love.png', width: 30),
-            label: 'Favorite',
+            label: 'Wishlist',
           ),
           BottomNavigationBarItem(
             icon: Image.asset('assets/icons/category.png', width: 30),

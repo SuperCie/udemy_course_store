@@ -7,6 +7,7 @@ class Ordermodel {
   final String state;
   final String city;
   final String locality;
+  final String productId;
   final String productName;
   final String category;
   final int productPrice;
@@ -24,6 +25,7 @@ class Ordermodel {
     required this.state,
     required this.city,
     required this.locality,
+    required this.productId,
     required this.productName,
     required this.category,
     required this.productPrice,
@@ -43,6 +45,7 @@ class Ordermodel {
       "state": state,
       "city": city,
       "locality": locality,
+      "productId": productId,
       "productName": productName,
       "productPrice": productPrice,
       "category": category,
@@ -65,6 +68,7 @@ class Ordermodel {
       state: map['state'] as String,
       city: map['city'] as String,
       locality: map['locality'] as String,
+      productId: map['productId'] as String,
       productName: map['productName'] as String,
       productPrice: map['productPrice'] as int,
       category: map['category'] as String,

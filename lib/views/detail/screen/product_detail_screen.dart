@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:les_store_app/models/productmodel.dart';
 import 'package:les_store_app/provider/cart_provider.dart';
+import 'package:les_store_app/provider/wishlist_provider.dart';
 import 'package:les_store_app/services/http_response.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
@@ -17,6 +18,9 @@ class ProductDetailScreen extends ConsumerStatefulWidget {
 class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
+    final wishProvider = ref.read(wishlistProvider.notifier);
+    final wishData = ref.watch(wishlistProvider);
+    final isInWishlist = wishData.containsKey(widget.product.id);
     final cartProviderData = ref.read(cartProvider.notifier);
     final cartData = ref.watch(cartProvider);
     final isInCart = cartData.containsKey(widget.product.id);
@@ -32,8 +36,32 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         centerTitle: true,
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.favorite_border_outlined),
+            onPressed: () {
+              isInWishlist == true
+                  ? wishProvider.removeWish(widget.product.id)
+                  : wishProvider.addWish(
+                    productName: widget.product.productName,
+                    productPrice: widget.product.productPrice,
+                    productId: widget.product.id,
+                    productDescription: widget.product.description,
+                    category: widget.product.category,
+                    images: widget.product.images,
+                    vendorId: widget.product.sellerId,
+                    productQuantity: widget.product.quantity,
+                    quantity: 1,
+                    vendorName: widget.product.sellerName,
+                  );
+              showBar(
+                context,
+                isInWishlist == true
+                    ? "Remove from wishlist"
+                    : "Added to Wishlish",
+              );
+            },
+            icon:
+                isInWishlist == true
+                    ? Icon(Icons.favorite, color: Colors.pink)
+                    : Icon(Icons.favorite_border),
           ),
         ],
       ),
@@ -88,6 +116,29 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
+                widget.product.totalRatings == 0
+                    ? Text('')
+                    : Row(
+                      children: [
+                        Icon(Icons.star, color: Colors.amber),
+                        SizedBox(width: 4),
+                        Text(
+                          widget.product.averageRatings.toStringAsFixed(1),
+                          style: GoogleFonts.roboto(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(width: 2),
+                        Text(
+                          '(${widget.product.totalRatings})',
+                          style: GoogleFonts.roboto(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ),
                 Divider(color: Colors.black),
                 Text(
                   'About',

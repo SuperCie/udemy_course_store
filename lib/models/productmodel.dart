@@ -11,6 +11,8 @@ class Product {
   final List<String> images;
   final String sellerId;
   final String sellerName;
+  final double averageRatings;
+  final int totalRatings;
 
   Product({
     required this.id,
@@ -23,6 +25,8 @@ class Product {
     required this.images,
     required this.sellerId,
     required this.sellerName,
+    required this.averageRatings,
+    required this.totalRatings,
   });
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -36,6 +40,8 @@ class Product {
       "images": images,
       "sellerId": sellerId,
       "sellerName": sellerName,
+      "averageRatings": averageRatings,
+      "totalRatings": totalRatings,
     };
   }
 
@@ -53,6 +59,12 @@ class Product {
       images: List<String>.from((map['images'] as List<dynamic>)),
       sellerId: map['sellerId'] as String,
       sellerName: map['sellerName'] as String,
+      averageRatings:
+          (map['averageRatings'] is int
+              ? (map['averageRatings'] as int).toDouble()
+              : map['averageRatings']
+                  as double), // untuk menjaga jika data yang dikirimkan dari json itu adalah int
+      totalRatings: map['totalRatings'] as int,
     );
   }
 }
